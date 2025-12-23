@@ -2,105 +2,172 @@
 
 Live Demo:- https://customer-churn-prediction-in-bank-5kfammx7axesifdqds4ayj.streamlit.app/
 
-This project uses **Machine Learning / Deep Learning** to **predict whether a bank customer will churn** — i.e., stop being a customer — based on historical customer data. Predicting churn helps banks identify at-risk customers and take proactive steps to retain them.
+
+This project predicts whether a **bank customer is likely to churn** using an **Artificial Neural Network (ANN)** trained on historical customer data.  
+It also includes an **interactive Streamlit web application** for real-time predictions.
 
 ---
 
-## 📌 1. Project Objective
+## 📌 Project Overview
 
-The main goal is to **build a model that predicts customer churn** based on features like age, balance, credit score, tenure, and more.
+Customer churn is a critical business problem in the banking sector.  
+This project formulates churn prediction as a **binary classification problem**:
 
-**Typical Workflow:**
+- `1` → Customer **churns**
+- `0` → Customer **does not churn**
 
-1. Load dataset
-2. Exploratory Data Analysis (EDA)
-3. Clean and preprocess data
-4. Encode categorical variables
-5. Scale numerical features
-6. Train ML or DL model
-7. Evaluate performance
-8. Save model and make predictions
-
----
-
-## 📁 2. Repository Structure
-
-| **File / Folder**          | **Description**                                                                                |
-| -------------------------- | ---------------------------------------------------------------------------------------------- |
-| `.gitignore`               | Files and folders to ignore in Git.                                                            |
-| `README.md`                | Project description (this file).                                                               |
-| `app.py`                   | Python app (Streamlit/Flask) to input customer data and predict churn using the trained model. |
-| `code.ipynb`               | Main notebook: data loading, preprocessing, training, and evaluation.                          |
-| `data.csv`                 | Dataset containing customer features and target column (`Exited`).                             |
-| `label_encoder_gender.pkl` | Label Encoder for the gender feature.                                                          |
-| `onehot_encoder_geo.pkl`   | One-Hot Encoder for geography/country feature.                                                 |
-| `scaler.pkl`               | Scaler for numeric features (e.g., StandardScaler).                                            |
-| `model.h5`                 | Trained Keras/TensorFlow deep learning model.                                                  |
-| `pred.ipynb`               | Notebook for running predictions on new customer data.                                         |
-| `requirements.txt`         | Python dependencies required for the project.                                                  |
+The solution helps banks:
+- Identify **high-risk customers**
+- Improve **customer retention strategies**
+- Reduce **revenue loss**
+- Enable **data-driven decision-making**
 
 ---
 
-## 🧠 3. Machine Learning / Deep Learning Concepts
+## 📊 Dataset Information
 
-**Model Type:**
+- **Dataset**: Bank Customer Churn Dataset  
+- **Source**: Kaggle  
+- **Total Records**: ~10,000  
+- **Target Variable**: `Exited`
 
-* Keras/TensorFlow neural network (binary classifier)
-* Architecture (typical):
-  * Input layer
-  * 1–3 Dense hidden layers with ReLU activation
-  * Output layer with Sigmoid activation
-* Loss function: Binary Cross-Entropy
+### 📁 Feature Description
 
-**Preprocessing:**
-
-* Label Encoding (`gender`)
-* One-Hot Encoding (`geography`)
-* Feature Scaling (`scaler.pkl`)
-
-**Validation:**
-
-* Validation accuracy: **0.8640** (~86.4% correct predictions)
-
----
-
-## 🧪 5. Results Interpretation
-
-**Validation Accuracy:** 0.8640  
-Indicates the model predicts churn correctly **86.4%** of the time.
-
-**Notes:**
-
-* Accuracy is only one metric; consider also:
-  * Precision
-  * Recall
-  * F1-score
-  * ROC-AUC
-* Model performance can improve with:
-  * Hyperparameter tuning
-  * Class imbalance handling (SMOTE, undersampling, etc.)
-  * Alternative models (Random Forest, XGBoost, ensemble methods)
+| Feature | Description |
+|------|------------|
+| CreditScore | Customer credit score |
+| Geography | Customer country |
+| Gender | Customer gender |
+| Age | Customer age |
+| Tenure | Years with the bank |
+| Balance | Account balance |
+| NumOfProducts | Number of bank products |
+| HasCrCard | Credit card ownership |
+| IsActiveMember | Active membership status |
+| EstimatedSalary | Estimated annual salary |
+| Exited | Target variable (Churn) |
 
 ---
 
-## 🏁 6. Using the App (`app.py`)
+## 🧹 Data Preprocessing
 
-The app allows users to input features such as:
+### ✔️ Feature Removal
+Removed non-informative identifiers:
+- `RowNumber`
+- `CustomerId`
+- `Surname`
 
-* Age
-* Credit score
-* Geography
-* Balance
-* Number of products
+### ✔️ Encoding
+- **Gender** → Label Encoding
+- **Geography** → One-Hot Encoding
 
-Then, it runs:
+### ✔️ Feature Scaling
+- Applied **StandardScaler** to numerical features
+- Ensures faster convergence during ANN training
 
-```python
-model = load_model('model.h5')
-gender_encoder = pickle.load(...)
-geo_encoder = pickle.load(...)
-scaler = pickle.load(...)
+All preprocessing objects are **saved and reused** during inference:
+- `scaler.pkl`
+- `label_encoder_gender.pkl`
+- `onehot_encoder_geo.pkl`
 
-output = model.predict(processed_input)
-```
+---
 
+## 🔀 Train-Test Split
+
+- **Training Set**: 80%
+- **Testing Set**: 20%
+- **Random State**: 42
+
+---
+
+## 🧠 Model Architecture (ANN)
+
+The model is implemented using **TensorFlow / Keras**.
+
+### 🔧 Network Structure
+
+| Layer | Details |
+|-----|--------|
+| Input Layer | Number of features after encoding |
+| Hidden Layer 1 | 64 neurons, ReLU |
+| Hidden Layer 2 | 32 neurons, ReLU |
+| Output Layer | 1 neuron, Sigmoid |
+
+### ⚙️ Compilation Details
+
+- **Optimizer**: Adam (learning rate = 0.001)
+- **Loss Function**: Binary Cross-Entropy
+- **Metric**: Accuracy
+
+### ⏹️ Regularization Strategy
+- **EarlyStopping** with patience = 10
+- Prevents overfitting and restores best weights
+
+---
+
+## 🏋️ Model Training
+
+- **Epochs**: Up to 100
+- **Callbacks**:
+  - EarlyStopping
+  - TensorBoard (for training visualization)
+
+The final trained model is saved as:
+```text
+model.h5
+````
+
+## 🔮 Model Inference Pipeline
+
+During prediction, the following steps are executed:
+
+1. User inputs customer details via the **Streamlit UI**
+2. Categorical features are **encoded** using saved encoders
+3. Numerical features are **scaled** using `StandardScaler`
+4. The ANN model outputs a **churn probability**
+5. The probability is **thresholded at 0.5** to generate the final decision
+
+---
+
+## 🌐 Streamlit Web Application
+
+The Streamlit application provides an interactive interface that allows users to:
+
+- Input customer details
+- Obtain **real-time churn probability**
+- Interpret churn risk in a simple and intuitive manner
+
+---
+
+## 🧩 Application Features
+
+- Interactive sliders and dropdown menus
+- Probability-based prediction output
+- Clean, minimal, and user-friendly UI
+
+---
+
+## 📈 Output Interpretation
+
+- **Churn Probability > 0.5** → ⚠️ Customer is **likely to churn**
+- **Churn Probability ≤ 0.5** → ✅ Customer is **unlikely to churn**
+
+
+---
+
+## 🧠 Why ANN Works Well for This Problem
+
+- Captures **non-linear relationships** in customer behavior
+- Handles **complex feature interactions**
+- Performs well with **standardized numerical inputs**
+- Produces **probabilistic outputs**, useful for churn risk assessment
+
+---
+
+## 🚀 Future Improvements
+
+- Handle class imbalance using **SMOTE**
+- Add evaluation metrics such as **ROC-AUC** and **Recall**
+- Experiment with advanced models (XGBoost, TabNet)
+- Introduce **model explainability** using SHAP
+- Deploy using **Docker** for production readiness
