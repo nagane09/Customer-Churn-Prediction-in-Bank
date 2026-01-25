@@ -196,12 +196,12 @@ Class weighting was applied during training to emphasize churned customers. This
 git clone <your-repository-url>
 cd <project-directory>
 ```
-# 12.2 Install Dependencies
+### 12.2 Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-# 12.3 Run the Application (Streamlit)
+### 12.3 Run the Application (Streamlit)
 ```bash
 streamlit run app.py
 ```
