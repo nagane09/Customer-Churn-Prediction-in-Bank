@@ -1,180 +1,207 @@
-# Customer Churn Prediction in Bank
+# Customer Churn Prediction Using Artificial Neural Networks  
+**A Comparative and Robustness-Oriented Study**
 
-Live Demo:- https://customer-churn-prediction-in-bank-5kfammx7axesifdqds4ayj.streamlit.app/
-
-This project predicts whether a **bank customer is likely to churn** using an **Artificial Neural Network (ANN)** trained on historical customer data.  
-It also includes an **interactive Streamlit web application** for real-time predictions.
-
----
+## Abstract
+Customer churn prediction is a critical problem in the banking sector, where accurately identifying customers likely to leave can significantly reduce revenue loss. This project presents a comprehensive machine learning pipeline for customer churn prediction using an Artificial Neural Network (ANN). The study systematically evaluates data preprocessing strategies, neural network architectures, decision thresholds, robustness under noise, class imbalance handling, and comparative performance against classical machine learning models. Experimental results demonstrate that the proposed ANN achieves competitive performance with an ROC-AUC of **0.855**, outperforming Logistic Regression and closely matching Random Forest performance, while offering better flexibility for cost-sensitive optimization.
 
 ---
 
-## 📌 Problem Formulation
+## 1. Introduction
+Customer retention is more cost-effective than customer acquisition, making churn prediction a central task in customer relationship management. Traditional statistical models often struggle with nonlinear feature interactions present in real-world banking data. Deep learning models, particularly Artificial Neural Networks (ANNs), provide a powerful alternative by learning complex representations from data.
 
-Customer churn is a critical issue in banking, causing **revenue loss** and inefficiency in **customer retention strategies**.  
-
-We model churn prediction as a **binary classification problem**:
-
-- `1` → Customer **churns**  
-- `0` → Customer **does not churn**  
-
-The model aims to:
-- Identify **high-risk customers**  
-- Enable **data-driven retention strategies**  
-- Quantify churn risk using **probabilistic outputs**
+This project investigates:
+- Whether ANN-based models outperform classical baselines
+- How feature importance, threshold tuning, and class imbalance affect churn detection
+- The robustness of the model under noisy and reduced-data scenarios
 
 ---
 
-## 📊 Dataset Details
+## 2. Dataset Description
+The dataset consists of bank customer records with demographic, financial, and behavioral attributes.
 
-- **Dataset Source:** Kaggle – Bank Customer Churn Dataset  
-- **Total Records:** ~10,000  
-- **Target Variable:** `Exited`  
+### Original Features
+- CreditScore  
+- Geography  
+- Gender  
+- Age  
+- Tenure  
+- Balance  
+- NumOfProducts  
+- HasCrCard  
+- IsActiveMember  
+- EstimatedSalary  
+- Exited (Target variable)
 
-### Feature Description
+### Preprocessing Decisions
+- Dropped identifiers: `RowNumber`, `CustomerId`, `Surname`
+- Label Encoding for `Gender`
+- One-Hot Encoding for `Geography`
+- Feature scaling using `StandardScaler`
 
-| Feature | Description |
-|--------|-------------|
-| CreditScore | Customer credit score |
-| Geography | Customer country (France, Spain, Germany) |
-| Gender | Customer gender |
-| Age | Customer age |
-| Tenure | Years with the bank |
-| Balance | Account balance |
-| NumOfProducts | Number of bank products |
-| HasCrCard | Credit card ownership |
-| IsActiveMember | Active membership status |
-| EstimatedSalary | Estimated annual salary |
-| Exited | Target variable (churn) |
-
-### Dataset Transparency
-
-- **Train/Test Split:** 80% / 20%  
-- **Preprocessing:**  
-  - Dropped identifiers: `RowNumber`, `CustomerId`, `Surname`  
-  - Label encoding: `Gender`  
-  - One-hot encoding: `Geography`  
-  - StandardScaler applied to all numeric features  
-- **Preprocessing Objects Saved:** `scaler.pkl`, `label_encoder_gender.pkl`, `onehot_encoder_geo.pkl`
+Encoders and scalers are serialized using `pickle` to ensure inference-time consistency.
 
 ---
 
-## 🔧 Model Architecture (ANN)
+## 3. Methodology
 
-The ANN model is implemented using **TensorFlow / Keras**.
-
-### Network Structure
-
-| Layer | Details |
-|-------|--------|
-| Input Layer | 12 features (after encoding) |
-| Hidden Layer 1 | 64 neurons, ReLU |
-| Hidden Layer 2 | 32 neurons, ReLU |
-| Output Layer | 1 neuron, Sigmoid |
-
-### Compilation Details
-
-- **Optimizer:** Adam (learning rate = 0.001)  
-- **Loss Function:** Binary Cross-Entropy  
-
-**Binary Cross-Entropy (BCE) Formula:**   BCE = - (1/n) * Σ [y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred)]
-
-
-- **Metric:** Accuracy  
-- **Regularization:** EarlyStopping with patience = 10 epochs
+### 3.1 Data Preprocessing Pipeline
+1. Categorical encoding:
+   - Gender → LabelEncoder
+   - Geography → OneHotEncoder
+2. Feature normalization using `StandardScaler`
+3. Train-test split (80% training / 20% testing)
 
 ---
 
-## 🏋️ Training Details
+### 3.2 Model Architecture (ANN)
+The primary ANN architecture is defined as:
 
-- **Epochs:** 100 (stopped early via EarlyStopping)  
-- **Validation:** 20% test split  
-- **Callbacks:** EarlyStopping, TensorBoard  
-- **Model Saved As:** `model.h5`
+- Input layer: 13 features
+- Hidden Layer 1: 64 neurons (ReLU)
+- Hidden Layer 2: 32 neurons (ReLU)
+- Output Layer: 1 neuron (Sigmoid)
+
+**Optimizer:** Adam (learning rate = 0.001)  
+**Loss Function:** Binary Cross-Entropy  
+**Regularization:** Early stopping (patience = 10)
 
 ---
 
-## 📈 Evaluation Metrics
+## 4. Experimental Setup
 
-The trained ANN model was evaluated on the test set:
+### 4.1 Evaluation Metrics
+- Accuracy
+- Precision, Recall, F1-score
+- ROC-AUC
+- Confusion Matrix
+- Business-oriented cost function
 
+---
+
+### 4.2 Baseline Models
+To contextualize ANN performance, the following classical models were implemented:
+- Logistic Regression
+- Random Forest (100 trees)
+
+---
+
+## 5. Results and Analysis
+
+### 5.1 ANN Performance
 | Metric | Value |
-|--------|-------|
-| Accuracy | 87.8% |
-| F1 Score | 0.88 |
-| BCE Loss | 0.332 |
-| Confusion Matrix | TP: 870, TN: 760, FP: 140, FN: 130 |
-
-**Additional Metrics:**
-
-- **Precision:** TP / (TP + FP) = 0.861  
-- **Recall:** TP / (TP + FN) = 0.870  
-- **R² (for regression-style evaluation, if required):**
-R² = 1 - sum((y_true - y_pred)^2) / sum((y_true - mean(y_true))^2)
-- **MAE:** Mean Absolute Error
-MAE = sum(|y_true - y_pred|) / n
-- **MSE:** Mean Squared Error  
-MSE = sum((y_true - y_pred)^2) / n
+|------|------|
+| Accuracy | **0.862** |
+| ROC-AUC | **0.855** |
+| Precision (Churn) | 0.73 |
+| Recall (Churn) | 0.47 |
 
 
 ---
 
-## 🔀 Model Comparison
+### 5.2 Model Comparison
+| Model | Accuracy |
+|-----|---------|
+| ANN | 0.862 |
+| Logistic Regression | 0.811 |
+| Random Forest | **0.866** |
 
-| Model | Accuracy | F1 Score | Notes |
-|-------|---------|----------|-------|
-| Random Forest (baseline) | 85.2% | 0.85 | Non-neural, interpretable |
-| ANN (proposed) | 87.8% | 0.88 | Captures non-linear interactions, probabilistic outputs |
-
-**Insight:** ANN provides better **decision-aware outputs**, allowing banks to flag **high-risk churn customers** with confidence.
-
----
-
-## 🔮 Inference Pipeline
-
-1. Customer details input via **Streamlit UI**  
-2. Categorical features encoded using saved encoders  
-3. Numeric features scaled with `StandardScaler`  
-4. ANN predicts **churn probability**  
-5. Thresholded at 0.5 for final prediction  
-
-**Decision Interpretation:**
-
-- **Churn Probability > 0.5** → ⚠️ Likely to churn  
-- **Churn Probability ≤ 0.5** → ✅ Unlikely to churn  
+The ANN significantly outperforms Logistic Regression and achieves performance comparable to Random Forest.
 
 ---
 
-## 🌐 Deployment
+### 5.3 Feature Importance Analysis
+Feature importance computed using Random Forest highlights:
+- Age
+- Balance
+- Number of Products
+- Geography-related features
 
-- **Platform:** Streamlit web app  
-- **Features:**  
-  - Interactive sliders and dropdown menus  
-  - Probability-based output  
-  - Clean and user-friendly interface  
-
-**Note:** Deployment supports decision-making but is **secondary to the model's research value**.
-
----
-
-## 🧠 Research-Oriented Insights
-
-- Captures **non-linear relationships** in customer behavior  
-- Handles **feature interactions** beyond linear methods  
-- Produces **probabilistic predictions** for risk assessment  
-- Incorporates **decision-aware logic**: alerts for borderline probabilities  
+This supports the ANN’s capacity to model nonlinear interactions without explicit feature selection.
 
 ---
 
-## 🚀 Future Work
+## 6. Robustness Studies
 
-- Handle **class imbalance** with SMOTE  
-- Introduce **ROC-AUC, Recall, Precision** metrics  
-- Experiment with **advanced models**: XGBoost, TabNet  
-- Apply **model explainability techniques** (SHAP, LIME)  
-- Deploy with **Docker** for production-level scalability
+### 6.1 Feature Ablation
+Removing `EstimatedSalary`:
+- Accuracy: **0.8635**
+
+This indicates that salary contributes limited predictive power.
 
 ---
 
-**Keywords:** ANN, Binary Classification, Churn Prediction, Streamlit, Bank Customer Analytics, Decision-Aware ML
+### 6.2 Reduced Training Data
+Training with only 50% of the training data:
+- Accuracy: **0.8535**
 
+The small performance drop demonstrates strong generalization.
+
+---
+
+### 6.3 Noise Injection
+Gaussian noise (σ = 0.01) added to test data:
+- Accuracy: **0.862**
+
+The model remains stable under mild perturbations.
+
+---
+
+## 7. Threshold Sensitivity Analysis
+The impact of varying classification thresholds:
+
+| Threshold | Precision (Churn) | Recall (Churn) |
+|--------|------------------|---------------|
+| 0.3 | 0.60 | 0.64 |
+| 0.5 | 0.75 | 0.46 |
+| 0.7 | 0.86 | 0.31 |
+
+Lower thresholds improve recall at the cost of increased false positives.
+
+---
+
+## 8. Cost-Sensitive Optimization
+A business-oriented cost function was defined:
+
+Cost = 10 × False Negatives + 1 × False Positives
+
+
+Lower thresholds significantly reduce costly false negatives, making them preferable in churn-prevention scenarios.
+
+---
+
+## 9. Handling Class Imbalance
+Class weighting was applied during training to emphasize churned customers. This increased recall for the minority class while slightly reducing overall accuracy, highlighting a common trade-off in imbalanced classification tasks.
+
+---
+
+## 10. Limitations
+- Single dataset without cross-industry validation
+- Limited hyperparameter optimization
+- Reduced interpretability compared to tree-based models
+
+---
+
+## 11. Future Work
+- Hyperparameter tuning using Bayesian optimization
+- Model explainability with SHAP or LIME
+- Deployment as a real-time decision-support tool
+- Integration with Streamlit for interactive inference
+
+---
+
+## 12. How to Run the Project
+
+### 12.1 Clone the Repository
+```bash
+git clone <your-repository-url>
+cd <project-directory>
+```
+# 12.2 Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+# 12.3 Run the Application (Streamlit)
+```bash
+streamlit run app.py
+```
