@@ -1,12 +1,14 @@
-# ML / Data
+# Core ML / Data
 tensorflow==2.20.0
 scikit-learn==1.8.0
 scikeras==0.13.0
 numpy==1.26.4
 pandas==2.3.3
-matplotlib
-tensorboard
+matplotlib==3.7.2
+tensorboard==2.20.0
 
-# Streamlit app
+# Streamlit
 streamlit==1.29.0
+
+# Protobuf fix
 protobuf==5.28.0
