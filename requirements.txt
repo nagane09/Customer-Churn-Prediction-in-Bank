@@ -1,12 +1,12 @@
-# Core ML / Data
+# ML / Data
 tensorflow==2.20.0
 scikit-learn==1.8.0
 scikeras==0.13.0
-pandas<3           # Streamlit-compatible
-numpy<2            # Streamlit-compatible
+numpy==1.26.4
+pandas==2.3.3
 matplotlib
 tensorboard
 
-# App / Streamlit
+# Streamlit app
 streamlit==1.29.0
-protobuf==3.20.3
+protobuf==5.28.0
