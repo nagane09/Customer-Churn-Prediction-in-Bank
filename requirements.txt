@@ -1,9 +1,11 @@
-tensorflow==2.20.0
-pandas 
-numpy 
-scikit-learn
+
 tensorboard
 matplotlib
-streamlit
 scikeras
-streamlit
+
+streamlit==1.29.0
+tensorflow==2.20.0
+protobuf==3.20.3
+scikit-learn==1.8.0
+pandas==3.0.0
+numpy==2.4.1
