@@ -1,5 +1,10 @@
 # Customer Churn Prediction Using Artificial Neural Networks  
-**A Comparative and Robustness-Oriented Study**
+
+**Note:** This project requires Python ≤ 3.11. MLflow depends on the `google.protobuf.service` module, which has been removed in recent `protobuf` versions, causing import errors on Python 3.13.
+
+**Update:** The website has been redeployed, so the link provided in the CV may no longer work. Please use the new link below:  
+[New Website Link](YOUR_NEW_LINK_HERE)
+
 
 ## Abstract
 Customer churn prediction is a critical problem in the banking sector, where accurately identifying customers likely to leave can significantly reduce revenue loss. This project presents a comprehensive machine learning pipeline for customer churn prediction using an Artificial Neural Network (ANN). The study systematically evaluates data preprocessing strategies, neural network architectures, decision thresholds, robustness under noise, class imbalance handling, and comparative performance against classical machine learning models. Experimental results demonstrate that the proposed ANN achieves competitive performance with an ROC-AUC of **0.855**, outperforming Logistic Regression and closely matching Random Forest performance, while offering better flexibility for cost-sensitive optimization.
